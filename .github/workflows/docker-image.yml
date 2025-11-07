@@ -1,50 +1,55 @@
 name: Build & Push ARM64 Docker Image
+
 on:
   workflow_dispatch:
   push:
-    # branches:
-    #  - 'main'
     tags:
-      - 'v*'
-  # pull_request:
-  #   branches:
-  #    - 'main'
+      - 'v*'   # build on version tags like v1.0.0
+
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
-  
+  IMAGE_NAME: ${{ github.repository }}  # ghcr.io/<owner>/<repo>
+
 jobs:
   docker:
-    runs-on: ARM64
+    runs-on: ARM64   # change to "ubuntu-latest" if not using a self-hosted ARM64 runner
+
+    permissions:
+      contents: read
+      packages: write   # required for GHCR with GITHUB_TOKEN
+
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v4
-      -
-        name: Docker meta
+
+      - name: Docker metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=sha
-      -
-        name: Login to DockerHub
+            type=ref,event=branch                   # :main or :feature-x
+            type=ref,event=pr                       # :pr-<num>
+            type=semver,pattern={{version}}         # :1.2.3
+            type=semver,pattern={{major}}.{{minor}} # :1.2
+            type=sha                                # :sha-<commit>
+            type=raw,value=latest,enable={{is_default_branch}}  # :latest on default branch
+
+      - name: Log in to GHCR
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      -
-        name: Build and push
+
+      - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .
+          platforms: linux/arm64   # single-arch ARM64 build
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
