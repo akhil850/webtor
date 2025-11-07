@@ -4,21 +4,21 @@ on:
   workflow_dispatch:
   push:
     tags:
-      - 'v*'   # build on version tags like v1.0.0
+      - "v*" # build on version tags like v1.0.0
     branches:
-      - main   # also build pushes to main
+      - main # also build pushes to main
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}  # ghcr.io/<owner>/<repo>
+  IMAGE_NAME: ${{ github.repository }} # ghcr.io/<owner>/<repo>
 
 jobs:
   docker:
-    runs-on: ARM64   # use "ubuntu-latest" if not self-hosted on ARM64
+    runs-on: ARM64 # use "ubuntu-latest" if not self-hosted on ARM64
 
     permissions:
       contents: read
-      packages: write   # required for GHCR with GITHUB_TOKEN
+      packages: write # required for GHCR with GITHUB_TOKEN
 
     steps:
       - name: Checkout
@@ -52,6 +52,3 @@ jobs:
           platforms: linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
