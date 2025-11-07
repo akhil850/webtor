@@ -5,6 +5,8 @@ on:
   push:
     tags:
       - 'v*'   # build on version tags like v1.0.0
+    branches:
+      - main   # also build pushes to main
 
 env:
   REGISTRY: ghcr.io
@@ -12,7 +14,7 @@ env:
 
 jobs:
   docker:
-    runs-on: ARM64   # change to "ubuntu-latest" if not using a self-hosted ARM64 runner
+    runs-on: ARM64   # use "ubuntu-latest" if not self-hosted on ARM64
 
     permissions:
       contents: read
@@ -28,12 +30,12 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            type=ref,event=branch                   # :main or :feature-x
-            type=ref,event=pr                       # :pr-<num>
-            type=semver,pattern={{version}}         # :1.2.3
-            type=semver,pattern={{major}}.{{minor}} # :1.2
-            type=sha                                # :sha-<commit>
-            type=raw,value=latest,enable={{is_default_branch}}  # :latest on default branch
+            type=ref,event=branch                   # e.g. :main
+            type=ref,event=pr                       # e.g. :pr-12
+            type=semver,pattern={{version}}         # e.g. :1.2.3
+            type=semver,pattern={{major}}.{{minor}} # e.g. :1.2
+            type=sha                                # e.g. :sha-abc1234
+            type=raw,value=latest,enable={{is_default_branch}}  # latest on main
 
       - name: Log in to GHCR
         if: github.event_name != 'pull_request'
@@ -47,7 +49,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          platforms: linux/arm64   # single-arch ARM64 build
+          platforms: linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
