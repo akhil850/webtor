@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: default  # or your preferred runner
+    runs-on: ARM64  # or your preferred runner
 
     steps:
       - name: Checkout repository
