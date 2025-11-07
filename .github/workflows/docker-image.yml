@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest   # or your preferred runner
+    runs-on: default  # or your preferred runner
 
     steps:
       - name: Checkout repository
