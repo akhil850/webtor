@@ -1,3 +1,4 @@
+name: Build & Push ARM64 Docker Image
 on:
   workflow_dispatch:
   push:
