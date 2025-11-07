@@ -3,16 +3,15 @@ name: Build & Push Multi-Arch Docker Image
 on:
   push:
     tags:
-      - 'v*'
-  workflow_dispatch:
+      - "v*" # build on version tags
+  workflow_dispatch: # manual trigger
 
 env:
-  IMAGE_NAME: yourdockerhubuser/webtor  # <-- change to your repo
+  IMAGE_NAME: akhil850/webtor # ← change to your Docker Hub repo
 
 jobs:
   build:
-    runs-on: ARM64
-
+    runs-on: self-hosted # use ubuntu-latest if you want GitHub-hosted runner
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -38,9 +37,16 @@ jobs:
           images: ${{ env.IMAGE_NAME }}
           tags: |
             type=ref,event=tag
+            type=ref,event=branch
+            type=sha
             type=raw,value=latest,enable={{is_default_branch}}
           labels: |
+            org.opencontainers.image.title=webtor
+            org.opencontainers.image.description=Self-hosted version of webtor.io implemented as an all-in-one Docker image
+            org.opencontainers.image.url=https://github.com/${{ github.repository }}
             org.opencontainers.image.source=${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.licenses=MIT
 
       - name: Build & push image (multi-arch)
         uses: docker/build-push-action@v6
@@ -56,4 +62,5 @@ jobs:
           sbom: false
 
       - name: Inspect image manifest
-        run: docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ github.ref_name || 'latest' }}
+        run: |
+          docker buildx imagetools inspect ${{ env.IMAGE_NAME }}:${{ github.ref_name || 'latest' }} || true
