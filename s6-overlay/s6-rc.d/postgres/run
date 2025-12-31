@@ -5,6 +5,12 @@ set -a
 source /etc/webtor/common.env
 set +a
 
+# Skip local PostgreSQL startup if disabled
+if [ "${USE_LOCALPG:-true}" = "false" ]; then
+  echo "[postgres] USE_LOCALPG=false — skipping local PostgreSQL startup"
+  exit 0
+fi
+
 mkdir -p "$PGDATA_DIR"
 chown -R postgres:postgres "$PGDATA_DIR"
 chmod 700 "$PGDATA_DIR"

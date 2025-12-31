@@ -6,16 +6,16 @@ ARG S6_VERBOSITY=1
 
 # Webtor services
 ARG TORRENT_STORE_COMMIT="9e48304b005475f73a3993d30870c4d3cf71c598"
-ARG MAGNET2TORRENT_COMMIT="88c9e8be3241a3a4daa4033bce16462e8b8c1a25"
+ARG MAGNET2TORRENT_COMMIT="b07b5cc62176ff415862759a146780745247300b"
 ARG EXTERNAL_PROXY_COMMIT="06588b7b83443fa6661cc6e8a2b294a8f725046a"
-ARG TORRENT_WEB_SEEDER_COMMIT="cb4ff2b10884270563481de980f0ab66ec8dace2"
+ARG TORRENT_WEB_SEEDER_COMMIT="9a9959513d8be18fd7228cef69ef3248d80e60fc"
 ARG TORRENT_WEB_SEEDER_CLEANER_COMMIT="dec86fa01f739ef3bcd20e9e1408c22485f93d51"
 ARG CONTENT_TRANSCODER_COMMIT="9473e22624e3f79a15ff17aa8b975e5c6f62ec17"
 ARG TORRENT_ARCHIVER_COMMIT="5ec51fe299641ca7ed3e5cb19f9a2ab370cca89a"
 ARG SRT2VTT_COMMIT="5a18d26bee380d6964e074713be2a4a98b2d54df"
 ARG TORRENT_HTTP_PROXY_COMMIT="d08b3921bb193ef863c629b96f1c0b5e00b5fc20"
-ARG REST_API_COMMIT="490b6c3f85b7378545a35575b6affd04aca80c55"
-ARG WEB_UI_COMMIT="fd5412ec2d84fce840b580d4a5dc2ac706cffd31"
+ARG REST_API_COMMIT="4fe937f800f4d033534be10119e7022ec2888e10"
+ARG WEB_UI_COMMIT="16cc48b19618519632a418e9ddddc64268166da3"
 
 # Nginx deps
 ARG NGINX_VERSION="1.29.3"
@@ -230,7 +230,7 @@ RUN tar -C / -Jxpf /tmp/s6-overlay-noarch.tar.xz
 ADD https://github.com/just-containers/s6-overlay/releases/download/v${S6_OVERLAY_VER}/s6-overlay-x86_64.tar.xz /tmp
 RUN tar -C / -Jxpf /tmp/s6-overlay-x86_64.tar.xz
 RUN apk --no-cache add redis ffmpeg ca-certificates openssl pcre zlib envsubst uuidgen postgresql \
-    postgresql-client postgresql-contrib
+    postgresql-client postgresql-contrib curl
 
 WORKDIR /app
 
@@ -259,8 +259,6 @@ COPY cont-init.d /etc/cont-init.d
 # Ensure s6 scripts are executable
 RUN find /etc/s6-overlay -type f \( -name run -o -name up \) -exec chmod +x {} +
 RUN find /etc/cont-init.d -type f -exec chmod +x {} +
-
-ENV DOMAIN=http://localhost:8080
 
 EXPOSE 8080
 # EXPOSE 8090 8091 8092 8093 8094 8095 8096 8097 8098

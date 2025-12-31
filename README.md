@@ -24,6 +24,8 @@ This is the self-hosted version of [webtor.io](https://webtor.io), implemented a
 3. Access the UI at <http://localhost:8080>.
 4. You're all set!
 
+You can run your Webtor instance on [ElfHosted](https://store.elfhosted.com/product/webtor/elf/10433/)!
+
 ## Setting a Custom Domain
 
 If you plan to access your instance from a different host or domain, set the `DOMAIN` environment variable like this:
@@ -52,11 +54,37 @@ CLEANER_KEEP_FREE=25%
 
 Both variables can be defined as percentages or as byte values (e.g., `10G` or `100M`).
 
-## Other Custom Variables
+## Configuring Database
 
-- **WAIT_FOR_VPN** - waits for VPN to start (in case you are using Gluetun)
-- **DISABLE_VIDEO_TRANSCODING** - disables video transcoding
+By default Webtor uses an embedded PostgreSQL database. You can configure the database connection using the following environment variables:
+
+- **USE_LOCALPG** - use built-in postgres (default: true)
+- **PG_HOST** - host for postgres (default: localhost)
+- **PG_PORT** - port for postgres (default: 5432)
+- **PG_USER** - user for postgres (default: app)
+- **PG_PASSWORD** - password for postgres (default: app)
+- **PG_DATABASE** - database for postgres (default: app)
+
+## Configuring content enrichment
+
+- **OMDB_API_KEY** - key for OMDB API
+- **KINOPOISK_UNOFFICIAL_API_KEY** - key for KinoPoisk Unofficial API
+
+## Configring Stremio Addon Access
+
 - **STREMIO_ADDON_USER_AGENT** - user agent to use for stremio addon
 - **STREMIO_ADDON_PROXY** - proxy to use for stremio addon (like socks5://user:pass@host:port)
-- **OMDB_API_KEY** - key for OMDB API (for content enrichment in library)
-- **KINOPOISK_UNOFFICIAL_API_KEY** - key for KinoPoisk Unofficial API (for content enrichment in library)
+
+## Configuring Transcoding
+
+- **DISABLE_VIDEO_TRANSCODING** - disables video transcoding (default: false)
+
+## Disable UI Features
+
+- **DISABLE_WEBDAV** - disables WebDAV interface (default: false)
+- **DISABLE_EMBED** - disables embeds support (default: false)
+
+## Other Custom Variables
+
+- **WAIT_FOR_VPN** - waits for VPN to start (in case you are using Gluetun) (default: false)
+- **REQUEST_URL_MAPPINGS** - custom mappings for request urls
